@@ -17,17 +17,17 @@ It works with the [Fake Data Generator Frontend](https://github.com/arturomorari
 The API runs at `http://localhost:8080`.
 
 ## API Endpoints
-|Method|Endpoint|
-|------|--------|
-|GET|/cpr|
-|GET|/name-gender|
-|GET|/name-gender-dob|
-|GET|/cpr-name-gender|
-|GET|/cpr-name-gender-dob|
-|GET|/address|
-|GET|/phone|
-|GET|/person|
-|GET|/person?n=<number_of_fake_persons>|
+| Method | Endpoint                           |
+|--------|------------------------------------|
+| GET    | /cpr                               |
+| GET    | /name-gender                       |
+| GET    | /name-gender-dob                   |
+| GET    | /cpr-name-gender                   |
+| GET    | /cpr-name-gender-dob               |
+| GET    | /address                           |
+| GET    | /phone                             |
+| GET    | /person                            |
+| GET    | /person?n=<number_of_fake_persons> |
 
 ## API Sample Output
 `GET /cpr`
