@@ -153,6 +153,7 @@ public class FakeInfo {
      * Returns a random street name made of letters (including Danish ones) and spaces.
      * The text never starts or ends with a space, nor contains two consecutive spaces.
      */
+
     private String getRandomStreet(int length) {
         StringBuilder text = new StringBuilder(length);
         for (int index = 0; index < length; index++) {
