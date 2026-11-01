@@ -65,11 +65,6 @@
     <version>2.0.5</version>
     <scope>test</scope>
 </dependency>
-    <!-- MariaDB JDBC driver -->
-    <dependency>
-        <groupId>org.mariadb.jdbc</groupId>
-        <artifactId>mariadb-java-client</artifactId>
-    </dependency>
     </dependencies>
 
     <build>
