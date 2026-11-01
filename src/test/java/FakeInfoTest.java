@@ -122,7 +122,6 @@ public class FakeInfoTest {
         assertFalse(birthDate.isAfter(LocalDate.now()));
     }
 
-    //Maybe change above to assertTrue
 
     @Test
     void birthDateShouldUseIsoFormat() {
