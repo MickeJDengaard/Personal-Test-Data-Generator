@@ -40,3 +40,18 @@ jobs:
 
       - name: Run integration tests
         run: mvn -B verify
+
+  api-tests:
+    name: API tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Postman CLI
+        run: curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
+      - name: Login to Postman CLI
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+        run: postman login --with-api-key "$POSTMAN_API_KEY"
+
+      - name: Run API tests
+        run: postman collection run "58427717-df35cbaf-96be-4dd4-9185-62e756b846b4" -e "58427717-aed7b47b-0131-4d4d-b34a-fecd735fe093"
