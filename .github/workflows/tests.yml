@@ -51,7 +51,12 @@ jobs:
         run: docker compose up -d --build
 
       - name: Wait for API
-        run: timeout 120 sh -c 'until curl -s -o /dev/null http://localhost:8080/phone; do sleep 2; done'
+        run: |
+          timeout 120 sh -c 'until curl -s -o /dev/null http://localhost:8080/phone; do sleep 2; done' || {
+            docker compose ps -a
+            docker compose logs
+            exit 1
+          }
 
       - name: Install Postman CLI
         run: curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
