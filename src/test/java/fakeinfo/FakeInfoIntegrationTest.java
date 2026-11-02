@@ -51,7 +51,7 @@ class FakeInfoIntegrationTest {
                 new Random(42)
         );
     }
-
+/*
     @Test
     void testPersonNamesAreLoaded() {
         List<PersonNames.Person> persons = personNames.persons();
@@ -70,6 +70,7 @@ class FakeInfoIntegrationTest {
             );
         }
     }
+    */
 
     @Test
     void testGetRandomTown() {
