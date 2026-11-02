@@ -235,8 +235,6 @@ public class FakeInfoTest {
                         .anyMatch(phone::startsWith)
         );
     }
-    
-    //Test for fake prefixes
 
     // -------------------------------------------------
     // Other tests
