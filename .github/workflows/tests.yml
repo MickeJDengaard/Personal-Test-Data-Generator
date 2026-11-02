@@ -44,7 +44,14 @@ jobs:
   api-tests:
     name: API tests
     runs-on: ubuntu-latest
+    needs: integration-tests
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Start app and database
+        working-directory: Personal-Test-Data-Generator
+        run: docker compose up -d --build
+
       - name: Install Postman CLI
         run: curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
 
@@ -54,4 +61,12 @@ jobs:
         run: postman login --with-api-key "$POSTMAN_API_KEY"
 
       - name: Run API tests
-        run: postman collection run "58427717-df35cbaf-96be-4dd4-9185-62e756b846b4" -e "58427717-aed7b47b-0131-4d4d-b34a-fecd735fe093"
+        run: |
+          postman collection run "58427717-df35cbaf-96be-4dd4-9185-62e756b846b4" \
+            -e "58427717-aed7b47b-0131-4d4d-b34a-fecd735fe093" \
+            --env-var "base_url=http://localhost:8080"
+
+      - name: Stop stack
+        if: always()
+        working-directory: Personal-Test-Data-Generator
+        run: docker compose down -v
