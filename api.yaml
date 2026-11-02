@@ -1,0 +1,201 @@
+openapi: "3.1.0"
+info:
+  title: "Personal_Test_Data_Generator API"
+  description: "Personal_Test_Data_Generator API"
+  version: "1.0.0"
+servers:
+  - url: "https://Personal_Test_Data_Generator"
+paths:
+  /address:
+    get:
+      summary: "GET address"
+      operationId: "address"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /address/:
+    get:
+      summary: "GET address/"
+      operationId: "address"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /cpr:
+    get:
+      summary: "GET cpr"
+      operationId: "cpr"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /cpr-name-gender:
+    get:
+      summary: "GET cpr-name-gender"
+      operationId: "cprNameGender"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /cpr-name-gender-dob:
+    get:
+      summary: "GET cpr-name-gender-dob"
+      operationId: "cprNameGenderDob"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /cpr-name-gender-dob/:
+    get:
+      summary: "GET cpr-name-gender-dob/"
+      operationId: "cprNameGenderDob"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /cpr-name-gender/:
+    get:
+      summary: "GET cpr-name-gender/"
+      operationId: "cprNameGender"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /cpr/:
+    get:
+      summary: "GET cpr/"
+      operationId: "cpr"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /name-gender:
+    get:
+      summary: "GET name-gender"
+      operationId: "nameGender"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /name-gender-dob:
+    get:
+      summary: "GET name-gender-dob"
+      operationId: "nameGenderDob"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /name-gender-dob/:
+    get:
+      summary: "GET name-gender-dob/"
+      operationId: "nameGenderDob"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /name-gender/:
+    get:
+      summary: "GET name-gender/"
+      operationId: "nameGender"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /person:
+    get:
+      summary: "GET person"
+      operationId: "person"
+      parameters:
+        - name: "n"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Object"
+  /person/:
+    get:
+      summary: "GET person/"
+      operationId: "person"
+      parameters:
+        - name: "n"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Object"
+  /phone:
+    get:
+      summary: "GET phone"
+      operationId: "phone"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /phone/:
+    get:
+      summary: "GET phone/"
+      operationId: "phone"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+components:
+  schemas:
+    Object:
+      type: "object"
+      properties: { }
