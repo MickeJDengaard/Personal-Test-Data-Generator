@@ -44,7 +44,6 @@ jobs:
   api-tests:
     name: API tests
     runs-on: ubuntu-latest
-    needs: integration-tests
     steps:
       - uses: actions/checkout@v4
 
