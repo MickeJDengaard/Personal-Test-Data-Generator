@@ -1,2 +1,15 @@
 !/.idea/
 /.env
+
+# Build output
+target/
+
+# IDE files
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# OS files
+.DS_Store
