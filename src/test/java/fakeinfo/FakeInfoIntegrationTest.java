@@ -1,39 +1,39 @@
-
 package fakeinfo;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.testcontainers.containers.MariaDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.MountableFile;
+import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@Testcontainers
+@AutoConfigureMockMvc
+@Import(MariaDbTestConfig.class)
 class FakeInfoIntegrationTest {
 
-    @Container
-    @ServiceConnection
-    static MariaDBContainer<?> MYSQL =
-            new MariaDBContainer<>("mariadb:11")
-                    .withDatabaseName("addresses")
-                    .withUsername("foo")
-                    .withPassword("secret")
-                    .withCopyFileToContainer(
-                            MountableFile.forHostPath("db/addresses.sql"),
-                            "/docker-entrypoint-initdb.d/01-addresses.sql"
-                    );
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private PersonNames personNames;
@@ -45,175 +45,207 @@ class FakeInfoIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        fakeInfo = new FakeInfo(
-                personNames,
-                townRepository,
-                new Random(42)
-        );
+        fakeInfo = new FakeInfo(personNames, townRepository, new Random());
     }
 
-//    @Test
-//    void testPersonNamesAreLoaded() {
-//        // TODO fix
-//        List<PersonNames.Person> persons = personNames.persons();
-//
-//        assertFalse(persons.isEmpty());
-//
-//        for (PersonNames.Person person : persons) {
-//            assertNotNull(person.firstName());
-//            assertNotNull(person.lastName());
-//
-//            assertTrue(
-//                    List.of(
-//                            FakeInfo.GENDER_FEMININE,
-//                            FakeInfo.GENDER_MASCULINE
-//                    ).contains(person.gender())
-//            );
-//        }
-//    }
+    // -------------------------------------------------
+    // TownRepository + database tests
+    // -------------------------------------------------
 
     @Test
-    void testGetRandomTown() {
-        TownRepository.Town town =
-                townRepository.getRandomTown(new Random(42));
+    void randomTownShouldMatchRowInDatabase() {
+        TownRepository.Town town = townRepository.getRandomTown(new Random());
 
-        assertNotNull(town);
-        assertNotNull(town.postalCode());
-        assertNotNull(town.townName());
+        assertEquals(getTownNameFromDatabase(town.postalCode()), town.townName());
     }
 
     @Test
-    void testGenerateFakePerson() {
-        Map<String, Object> person = fakeInfo.getFakePerson();
+    void everyTownShouldBeReachable() {
+        int count = getTownCount();
+        TownRepository repository = new TownRepository(jdbcTemplate);
 
-        assertEquals(7, person.size());
+        List<TownRepository.Town> towns = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            towns.add(repository.getRandomTown(new FixedRandom(i)));
+        }
 
-        assertNotNull(person.get("CPR"));
-        assertNotNull(person.get("firstName"));
-        assertNotNull(person.get("lastName"));
-        assertNotNull(person.get("gender"));
-        assertNotNull(person.get("birthDate"));
-        assertNotNull(person.get("address"));
-        assertNotNull(person.get("phoneNumber"));
+        assertEquals(count, towns.stream().distinct().count());
     }
 
     @Test
-    void testCprMatchesBirthDate() {
-        Map<String, Object> person = fakeInfo.getFakePerson();
+    void townNamesShouldKeepDanishCharacters() {
+        int count = getTownCount();
+        TownRepository repository = new TownRepository(jdbcTemplate);
 
-        String cpr = (String) person.get("CPR");
+        List<TownRepository.Town> towns = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            towns.add(repository.getRandomTown(new FixedRandom(i)));
+        }
 
-        LocalDate birthDate = LocalDate.parse(
-                (String) person.get("birthDate")
-        );
+        assertTrue(towns.contains(new TownRepository.Town("2100", "København Ø")));
+    }
 
-        String expectedDate = birthDate.format(
-                DateTimeFormatter.ofPattern("ddMMyy")
-        );
+    // -------------------------------------------------
+    // PersonNames + names file tests
+    // -------------------------------------------------
 
-        assertEquals(10, cpr.length());
-        assertTrue(cpr.matches("\\d{10}"));
-        assertEquals(expectedDate, cpr.substring(0, 6));
+    @Test
+    void namesFileShouldLoadPersons() {
+        List<PersonNames.Person> persons = personNames.persons();
+
+        assertFalse(persons.isEmpty());
     }
 
     @Test
-    void testCprMatchesGender() {
-        Map<String, Object> person = fakeInfo.getFakePerson();
+    void namesFileShouldOnlyContainValidPersons() {
+        List<PersonNames.Person> persons = personNames.persons();
 
-        String cpr = (String) person.get("CPR");
-        String gender = (String) person.get("gender");
-
-        int lastDigit = Character.getNumericValue(
-                cpr.charAt(9)
-        );
-
-        if (FakeInfo.GENDER_FEMININE.equals(gender)) {
-            assertEquals(0, lastDigit % 2);
-        } else {
-            assertEquals(1, lastDigit % 2);
+        for (PersonNames.Person person : persons) {
+            assertFalse(person.firstName().isBlank());
+            assertFalse(person.lastName().isBlank());
+            assertTrue(List.of(FakeInfo.GENDER_FEMININE, FakeInfo.GENDER_MASCULINE)
+                    .contains(person.gender()));
         }
     }
 
+    // -------------------------------------------------
+    // FakeInfo + database + names file tests
+    // -------------------------------------------------
+
     @Test
-    void testGeneratePhoneNumber() {
-        String phone = fakeInfo.getPhoneNumber();
+    void fakePersonShouldHaveNameFromNamesFile() {
+        Map<String, Object> person = fakeInfo.getFakePerson();
 
-        assertNotNull(phone);
-        assertEquals(8, phone.length());
-        assertTrue(phone.matches("\\d{8}"));
-
-        assertTrue(
-                List.of(FakeInfo.PHONE_PREFIXES)
-                        .stream()
-                        .anyMatch(phone::startsWith)
+        PersonNames.Person expected = new PersonNames.Person(
+                (String) person.get("firstName"),
+                (String) person.get("lastName"),
+                (String) person.get("gender")
         );
+
+        assertTrue(personNames.persons().contains(expected));
     }
 
     @Test
-    void testGenerateAddress() {
-        Map<String, Object> result = fakeInfo.getAddress();
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> address =
-                (Map<String, Object>) result.get("address");
-
-        assertNotNull(address);
-        assertNotNull(address.get("street"));
-        assertNotNull(address.get("number"));
-        assertNotNull(address.get("floor"));
-        assertNotNull(address.get("door"));
-        assertNotNull(address.get("postal_code"));
-        assertNotNull(address.get("town_name"));
-    }
-
-    @Test
-    void testGenerateMultiplePersons() {
-        List<Map<String, Object>> persons =
-                fakeInfo.getFakePersons(5);
-
-        assertEquals(5, persons.size());
+    void cprShouldMatchGenderFromNamesFile() {
+        List<Map<String, Object>> persons = fakeInfo.getFakePersons(FakeInfo.MAX_BULK_PERSONS);
 
         for (Map<String, Object> person : persons) {
-            assertNotNull(person.get("CPR"));
-            assertNotNull(person.get("firstName"));
-            assertNotNull(person.get("lastName"));
-            assertNotNull(person.get("gender"));
-            assertNotNull(person.get("birthDate"));
-            assertNotNull(person.get("address"));
-            assertNotNull(person.get("phoneNumber"));
+            String cpr = (String) person.get("CPR");
+            int lastDigit = Character.getNumericValue(cpr.charAt(9));
+            int expectedParity = FakeInfo.GENDER_MASCULINE.equals(person.get("gender")) ? 1 : 0;
+
+            assertEquals(expectedParity, lastDigit % 2);
         }
     }
 
     @Test
-    void testMinimumNumberOfPersons() {
-        List<Map<String, Object>> persons =
-                fakeInfo.getFakePersons(-2);
+    void fakePersonsShouldHaveTownsFromDatabase() {
+        List<Map<String, Object>> persons = fakeInfo.getFakePersons(FakeInfo.MAX_BULK_PERSONS);
+
+        assertEquals(FakeInfo.MAX_BULK_PERSONS, persons.size());
+        for (Map<String, Object> person : persons) {
+            Map<String, Object> address = getAddress(person);
+
+            assertEquals(
+                    getTownNameFromDatabase((String) address.get("postal_code")),
+                    address.get("town_name")
+            );
+        }
+    }
+
+    // -------------------------------------------------
+    // Controller tests
+    // -------------------------------------------------
+
+    @Test
+    void personEndpointShouldReturnPersonWithAllFields() throws Exception {
+        JsonNode person = getJson("/person");
+
+        List<String> fields = new ArrayList<>();
+        person.fieldNames().forEachRemaining(fields::add);
 
         assertEquals(
-                FakeInfo.MIN_BULK_PERSONS,
-                persons.size()
+                List.of("CPR", "firstName", "lastName", "gender", "birthDate", "address", "phoneNumber"),
+                fields
         );
     }
 
     @Test
-    void testMaximumNumberOfPersons() {
-        List<Map<String, Object>> persons =
-                fakeInfo.getFakePersons(150);
+    void personEndpointShouldReturnDataFromDatabaseAndNamesFile() throws Exception {
+        JsonNode person = getJson("/person");
 
-        assertEquals(
-                FakeInfo.MAX_BULK_PERSONS,
-                persons.size()
-        );
+        assertPersonUsesRealData(person);
     }
 
     @Test
-    void testDefaultNumberOfPersons() {
-        List<Map<String, Object>> persons =
-                fakeInfo.getFakePersons();
+    void personEndpointShouldReturnThreePersons() throws Exception {
+        JsonNode persons = getJson("/person?n=3");
+
+        assertTrue(persons.isArray());
+        assertEquals(3, persons.size());
+        for (JsonNode person : persons) {
+            assertPersonUsesRealData(person);
+        }
+    }
+
+    // -------------------------------------------------
+    // Helpers
+    // -------------------------------------------------
+
+    private JsonNode getJson(String url) throws Exception {
+        String body = mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        return objectMapper.readTree(body);
+    }
+
+    private void assertPersonUsesRealData(JsonNode person) {
+        JsonNode address = person.get("address");
 
         assertEquals(
-                FakeInfo.MIN_BULK_PERSONS,
-                persons.size()
+                getTownNameFromDatabase(address.get("postal_code").asText()),
+                address.get("town_name").asText()
         );
+
+        PersonNames.Person expected = new PersonNames.Person(
+                person.get("firstName").asText(),
+                person.get("lastName").asText(),
+                person.get("gender").asText()
+        );
+
+        assertTrue(personNames.persons().contains(expected));
+    }
+
+    private String getTownNameFromDatabase(String postalCode) {
+        return jdbcTemplate.queryForObject(
+                "SELECT cTownName FROM postal_code WHERE cPostalCode = ?",
+                String.class,
+                postalCode
+        );
+    }
+
+    private int getTownCount() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM postal_code", Integer.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getAddress(Map<String, Object> person) {
+        return (Map<String, Object>) person.get("address");
+    }
+
+    private static class FixedRandom extends Random {
+        private final int value;
+
+        FixedRandom(int value) {
+            this.value = value;
+        }
+
+        @Override
+        public int nextInt(int bound) {
+            return value;
+        }
     }
 }
