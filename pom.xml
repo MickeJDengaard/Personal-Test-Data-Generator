@@ -23,8 +23,9 @@
         <maven.compiler.target>17</maven.compiler.target>
 
         <sonar.coverage.jacoco.xmlReportPaths>${project.build.directory}/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-        <sonar.organization>placeholder</sonar.organization>
-        <sonar.projectKey>my-java-backend-project</sonar.projectKey>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.organization>mickejdengaard</sonar.organization>
+        <sonar.projectKey>MickeJDengaard_Personal-Test-Data-Generator</sonar.projectKey>
     </properties>
 
     <dependencies>
