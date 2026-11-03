@@ -49,6 +49,13 @@ public class PersonNames {
     }
 
     /**
+     * @return All loaded persons, unmodifiable
+     */
+    List<Person> persons() {
+        return persons;
+    }
+
+    /**
      * Returns a random person from the names file
      */
     public Person getRandomPerson(Random random) {
