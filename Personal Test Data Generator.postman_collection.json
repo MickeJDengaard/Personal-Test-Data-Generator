@@ -1,0 +1,1865 @@
+{
+  "info": {
+    "_postman_id": "df35cbaf-96be-4dd4-9185-62e756b846b4",
+    "name": "Personal Test Data Generator",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58427717",
+    "_collection_link": "https://go.postman.co/collection/58427717-df35cbaf-96be-4dd4-9185-62e756b846b4?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "phone",
+      "item": [
+        {
+          "name": "success",
+          "item": [
+            {
+              "name": "/phone",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/phone",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "phone"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/phone/",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/phone/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "phone",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`GET ${pm.request.url.getPath()} returns 200 OK`, function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// NOT EMPTY / CLEAR WHITE SPACE (technically not needed, since following tests cover this, but makes it easier to pinpoint the issue.)\r\npm.test(\"Response body is not empty\", function () {\r\n    pm.expect(pm.response.text().trim()).to.not.be.empty;\r\n});\r\n\r\n// EXACTLY ONE PHONE NUMBER RETURNED\r\npm.test(\"Body has exactly one key\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"phoneNumber\");\r\n});\r\n\r\n// PHONE NUMBER IS EXACTLY 8 DIGITS LONG\r\npm.test(\"phoneNumber is exactly 8 digits\", function () {\r\n    pm.expect(pm.response.json().phoneNumber).to.match(/^\\d{8}$/);\r\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "error",
+          "item": [
+            {
+              "name": "/phone",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/phone",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "phone"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/phone/",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/phone/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "phone",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/phone",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/phone",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "phone"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/phone/",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/phone/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "phone",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns 405 Method Not Allowed`, function () {\r\n    pm.response.to.have.status(405);\r\n});\r\n\r\n// ERROR BODY\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns error body {\"error\": \"Incorrect HTTP method\"}`, function () {\r\n    pm.expect(pm.response.json()).to.eql({ error: \"Incorrect HTTP method\" });\r\n});\r\n\r\n// NO DATA RETURNED\r\npm.test(\"Response contains only the error key\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"error\");\r\n});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cpr",
+      "item": [
+        {
+          "name": "success",
+          "item": [
+            {
+              "name": "/cpr",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr/",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// We confirm the length of a cpr number here, but wait with date and gender confirmations for the apis that return this, so we can cross check these values properly with returned data in comparison to our knowledge about the cpr system (aslong as it lasts - RIP CPR 2026?)\r\n\r\n// STATUS CODE\r\npm.test(`GET ${pm.request.url.getPath()} returns 200 OK`, function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// EXACTLY ONE KEY\r\npm.test(\"Body has exactly one key: CPR\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"CPR\");\r\n});\r\n\r\n// CPR IS EXACTLY 10 DIGITS\r\npm.test(\"CPR is exactly 10 digits\", function () {\r\n    pm.expect(pm.response.json().CPR).to.match(/^\\d{10}$/);\r\n});\r\n"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "error",
+          "item": [
+            {
+              "name": "/cpr",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr/",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr/",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns 405 Method Not Allowed`, function () {\r\n    pm.response.to.have.status(405);\r\n});\r\n\r\n// ERROR BODY\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns error body {\"error\": \"Incorrect HTTP method\"}`, function () {\r\n    pm.expect(pm.response.json()).to.eql({ error: \"Incorrect HTTP method\" });\r\n});\r\n\r\n// NO DATA RETURNED\r\npm.test(\"Response contains only the error key\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"error\");\r\n});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "name-gender",
+      "item": [
+        {
+          "name": "success",
+          "item": [
+            {
+              "name": "/name-gender",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/name-gender/",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`GET ${pm.request.url.getPath()} returns 200 OK`, function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// EXACTLY THREE KEYS\r\npm.test(\"Body has the keys: firstName, lastName, gender\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"firstName\", \"lastName\", \"gender\");\r\n});\r\n\r\n// CHECK FIRST NAME NON EMPTY\r\npm.test(\"firstName is a non-empty string\", function () {\r\n    pm.expect(pm.response.json().firstName).to.be.a(\"string\").and.not.be.empty;\r\n});\r\n\r\n// CHECK LAST NAME NON EMPT\r\npm.test(\"lastName is a non-empty string\", function () {\r\n    pm.expect(pm.response.json().lastName).to.be.a(\"string\").and.not.be.empty;\r\n});\r\n\r\n// CHECK HAS VALUE + ALLOWED VALUE\r\npm.test(\"gender is 'male' or 'female'\", function () {\r\n    pm.expect(pm.response.json().gender).to.be.oneOf([\"male\", \"female\"]);\r\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "error",
+          "item": [
+            {
+              "name": "/name-gender",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/name-gender/",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/name-gender",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/name-gender/",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns 405 Method Not Allowed`, function () {\r\n    pm.response.to.have.status(405);\r\n});\r\n\r\n// ERROR BODY\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns error body {\"error\": \"Incorrect HTTP method\"}`, function () {\r\n    pm.expect(pm.response.json()).to.eql({ error: \"Incorrect HTTP method\" });\r\n});\r\n\r\n// NO DATA RETURNED\r\npm.test(\"Response contains only the error key\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"error\");\r\n});\r\n"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "name-gender-dob",
+      "item": [
+        {
+          "name": "success",
+          "item": [
+            {
+              "name": "/name-gender-dob",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      ""
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender-dob",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender-dob"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/name-gender-dob/",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender-dob/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender-dob",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`GET ${pm.request.url.getPath()} returns 200 OK`, function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// EXACTLY FOUR KEYS\r\npm.test(\"Body has the keys: firstName, lastName, gender, birthDate\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"firstName\", \"lastName\", \"gender\", \"birthDate\");\r\n});\r\n\r\n// FIRST NAME IS NON-EMPTY STRING\r\npm.test(\"firstName is a non-empty string\", function () {\r\n    pm.expect(pm.response.json().firstName).to.be.a(\"string\").and.not.be.empty;\r\n});\r\n\r\n// LAST NAME IS NON-EMPTY STRING\r\npm.test(\"lastName is a non-empty string\", function () {\r\n    pm.expect(pm.response.json().lastName).to.be.a(\"string\").and.not.be.empty;\r\n});\r\n\r\n// CHECK HAS VALUE + ALLOWED VALUE\r\npm.test(\"gender is 'male' or 'female'\", function () {\r\n    pm.expect(pm.response.json().gender).to.be.oneOf([\"male\", \"female\"]);\r\n});\r\n\r\n// BIRTH DATE FORMAT\r\npm.test(\"birthDate has the format YYYY-MM-DD\", function () {\r\n    pm.expect(pm.response.json().birthDate).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r\n});\r\n"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "error",
+          "item": [
+            {
+              "name": "/name-gender-dob",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender-dob",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender-dob"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/name-gender-dob/",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender-dob/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender-dob",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/name-gender-dob",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender-dob",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender-dob"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/name-gender-dob/",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/name-gender-dob/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "name-gender-dob",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns 405 Method Not Allowed`, function () {\r\n    pm.response.to.have.status(405);\r\n});\r\n\r\n// ERROR BODY\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns error body {\"error\": \"Incorrect HTTP method\"}`, function () {\r\n    pm.expect(pm.response.json()).to.eql({ error: \"Incorrect HTTP method\" });\r\n});\r\n\r\n// NO DATA RETURNED\r\npm.test(\"Response contains only the error key\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"error\");\r\n});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cpr-name-gender",
+      "item": [
+        {
+          "name": "success",
+          "item": [
+            {
+              "name": "/cpr-name-gender",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr-name-gender/",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`GET ${pm.request.url.getPath()} returns 200 OK`, function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// EXACTLY FOUR KEYS\r\npm.test(\"Body has the keys: CPR, firstName, lastName, gender\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"CPR\", \"firstName\", \"lastName\", \"gender\");\r\n});\r\n\r\n// CPR IS EXACTLY 10 DIGITS\r\npm.test(\"CPR is 10 digits\", function () {\r\n    pm.expect(pm.response.json().CPR).to.match(/^\\d{10}$/);\r\n});\r\n\r\n// FIRST NAME IS NON-EMPTY STRING\r\npm.test(\"firstName is non-empty string\", function () {\r\n    pm.expect(pm.response.json().firstName).to.be.a(\"string\").and.not.be.empty;\r\n});\r\n\r\n// LAST NAME IS NON-EMPTY STRING\r\npm.test(\"lastName is non-empty string\", function () {\r\n    pm.expect(pm.response.json().lastName).to.be.a(\"string\").and.not.be.empty;\r\n});\r\n\r\n// CHECK HAS VALUE + ALLOWED VALUE\r\npm.test(\"gender is 'male' or 'female'\", function () {\r\n    pm.expect(pm.response.json().gender).to.be.oneOf([\"male\", \"female\"]);\r\n});\r\n\r\n// LAST CPR DIGIT CHECK)\r\npm.test(\"Last CPR digit matches gender (odd = male, even = female)\", function () {\r\n    const body = pm.response.json();\r\n    const lastDigit = Number(body.CPR.slice(-1));\r\n    const expectedGender = lastDigit % 2 === 1 ? \"male\" : \"female\";\r\n    pm.expect(body.gender).to.equal(expectedGender);\r\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "error",
+          "item": [
+            {
+              "name": "/cpr-name-gender",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr-name-gender/",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr-name-gender",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr-name-gender/",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns 405 Method Not Allowed`, function () {\r\n    pm.response.to.have.status(405);\r\n});\r\n\r\n// ERROR BODY\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns error body {\"error\": \"Incorrect HTTP method\"}`, function () {\r\n    pm.expect(pm.response.json()).to.eql({ error: \"Incorrect HTTP method\" });\r\n});\r\n\r\n// NO DATA RETURNED\r\npm.test(\"Response contains only the error key\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"error\");\r\n});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "cpr-name-gender-dob",
+      "item": [
+        {
+          "name": "success",
+          "item": [
+            {
+              "name": "/cpr-name-gender-dob",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender-dob",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender-dob"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr-name-gender-dob/",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender-dob/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender-dob",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`GET ${pm.request.url.getPath()} returns 200 OK`, function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// EXACTLY FIVE KEYS\r\npm.test(\"Body has the keys: CPR, firstName, lastName, gender, birthDate\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"CPR\", \"firstName\", \"lastName\", \"gender\", \"birthDate\");\r\n});\r\n\r\n// CPR IS EXACTLY 10 DIGITS\r\npm.test(\"CPR is 10 digits\", function () {\r\n    pm.expect(pm.response.json().CPR).to.match(/^\\d{10}$/);\r\n});\r\n\r\n// FIRST NAME IS NON-EMPTY STRING\r\npm.test(\"firstName is a non-empty string\", function () {\r\n    pm.expect(pm.response.json().firstName).to.be.a(\"string\").and.not.be.empty;\r\n});\r\n\r\n// LAST NAME IS NON-EMPTY STRING\r\npm.test(\"lastName is a non-empty string\", function () {\r\n    pm.expect(pm.response.json().lastName).to.be.a(\"string\").and.not.be.empty;\r\n});\r\n\r\n// CHECK HAS VALUE + ALLOWED VALUE\r\npm.test(\"gender is 'male' or 'female'\", function () {\r\n    pm.expect(pm.response.json().gender).to.be.oneOf([\"male\", \"female\"]);\r\n});\r\n\r\n// BIRTH DATE FORMAT\r\npm.test(\"birthDate has the format YYYY-MM-DD\", function () {\r\n    pm.expect(pm.response.json().birthDate).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);\r\n});\r\n\r\n// keeping the two following as a way to cross check that unit tests work as intended outside mocked data. \r\n\r\n// CPR STARTS WITH THE BIRTH DATE AS ddMMyy\r\npm.test(\"First 6 CPR digits match birthDate as ddMMyy\", function () {\r\n    const body = pm.response.json();\r\n    const [year, month, day] = body.birthDate.split(\"-\");\r\n    pm.expect(body.CPR.slice(0, 6)).to.equal(day + month + year.slice(2));\r\n});\r\n\r\n// LAST CPR DIGIT MATCHES GENDER\r\npm.test(\"Last CPR digit matches gender (odd = male, even = female)\", function () {\r\n    const body = pm.response.json();\r\n    const lastDigit = Number(body.CPR.slice(-1));\r\n    pm.expect(body.gender).to.equal(lastDigit % 2 === 1 ? \"male\" : \"female\");\r\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "error",
+          "item": [
+            {
+              "name": "/cpr-name-gender-dob",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender-dob",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender-dob"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr-name-gender-dob/",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender-dob/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender-dob",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr-name-gender-dob",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender-dob",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender-dob"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/cpr-name-gender-dob/",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/cpr-name-gender-dob/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "cpr-name-gender-dob",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns 405 Method Not Allowed`, function () {\r\n    pm.response.to.have.status(405);\r\n});\r\n\r\n// ERROR BODY\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns error body {\"error\": \"Incorrect HTTP method\"}`, function () {\r\n    pm.expect(pm.response.json()).to.eql({ error: \"Incorrect HTTP method\" });\r\n});\r\n\r\n// NO DATA RETURNED\r\npm.test(\"Response contains only the error key\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"error\");\r\n});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "address",
+      "item": [
+        {
+          "name": "success",
+          "item": [
+            {
+              "name": "/address",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/address",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "address"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/address/",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/address/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "address",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`GET ${pm.request.url.getPath()} returns 200 OK`, function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// EXACTLY ONE KEY AT STRUCTURE HEAD\r\npm.test(\"Body has exactly one key: address\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"address\");\r\n});\r\n\r\n// ADDRESS HAS UNDER KEYS\r\npm.test(\"address has exactly the keys: street, number, floor, door, postal_code, town_name\", function () {\r\n    pm.expect(pm.response.json().address).to.have.all.keys(\r\n        \"street\", \"number\", \"floor\", \"door\", \"postal_code\", \"town_name\"\r\n    );\r\n});\r\n\r\n//  The following 4 is checked in unit test, but with mocked data. Here we can test them with non-mocked data.\r\n\r\n// POSTAL CHECK\r\npm.test(\"postal_code is exactly 4 digits\", function () {\r\n    pm.expect(pm.response.json().address.postal_code).to.match(/^\\d{4}$/);\r\n});\r\n\r\n// TOWN NAME IS A STRING\r\npm.test(\"town_name is a string\", function () {\r\n    pm.expect(pm.response.json().address.town_name).to.be.a(\"string\");\r\n});\r\n\r\n// FLOOR CHECK\r\npm.test(\"floor is 'st' or integer\", function () {\r\n    const floor = pm.response.json().address.floor;\r\n    pm.expect(floor === \"st\" || Number.isInteger(floor)).to.be.true;\r\n});\r\n\r\n// DOOR CHECK\r\npm.test(\"door is a string or an integer\", function () {\r\n    const door = pm.response.json().address.door;\r\n    pm.expect(typeof door === \"string\" || Number.isInteger(door)).to.be.true;\r\n});\r\n"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "error",
+          "item": [
+            {
+              "name": "/address",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/address",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "address"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/address/",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/address/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "address",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/address",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/address",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "address"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/address/",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/address/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "address",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns 405 Method Not Allowed`, function () {\r\n    pm.response.to.have.status(405);\r\n});\r\n\r\n// ERROR BODY\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns error body {\"error\": \"Incorrect HTTP method\"}`, function () {\r\n    pm.expect(pm.response.json()).to.eql({ error: \"Incorrect HTTP method\" });\r\n});\r\n\r\n// NO DATA RETURNED\r\npm.test(\"Response contains only the error key\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"error\");\r\n});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "person",
+      "item": [
+        {
+          "name": "success",
+          "item": [
+            {
+              "name": "/person",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=1",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=2",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=2",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=99",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=99",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "99"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=100",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=100",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "100"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=-5",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=-5",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "-5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=2.5",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=2.5",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "2.5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=1",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=1",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=2",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=2",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=99",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=99",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "99"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=100",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=100",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "100"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=-5",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=-5",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "-5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=2.5",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=2.5",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "2.5"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`GET ${pm.request.url.getPathWithQuery()} returns 200 OK`, function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\n// CHECK SIZE MATCH n\r\npm.test(\"Body size matches n\", function () {\r\n    const n = Number(pm.request.url.query.get(\"n\") || 1);\r\n    const data = pm.response.json();\r\n    if (n === 1) {\r\n        pm.expect(data).to.be.an(\"object\").and.not.be.an(\"array\");\r\n    } else {\r\n        pm.expect(data).to.be.an(\"array\").with.lengthOf(n);\r\n    }\r\n});\r\n\r\n// CHECK EACH PERSON HAS EXPECTED KEYS\r\npm.test(\"Every person has the keys: CPR, firstName, lastName, gender, birthDate, address, phoneNumber\", function () {\r\n    const data = pm.response.json();\r\n    const persons = Array.isArray(data) ? data : [data];\r\n    persons.forEach(function (person) {\r\n        pm.expect(person).to.have.all.keys(\r\n            \"CPR\", \"firstName\", \"lastName\", \"gender\", \"birthDate\", \"address\", \"phoneNumber\"\r\n        );\r\n    });\r\n});\r\n\r\n// CHECK EXPECTED KEYS FOR ADDRESS\r\npm.test(\"Every address has the expected keys\", function () {\r\n    const data = pm.response.json();\r\n    const persons = Array.isArray(data) ? data : [data];\r\n    persons.forEach(function (p) {\r\n        pm.expect(p.address).to.have.all.keys(\r\n            \"street\", \"number\", \"floor\", \"door\", \"postal_code\", \"town_name\"\r\n        );\r\n    });\r\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "invalid-parameters",
+          "item": [
+            {
+              "name": "/person?n=0",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=0",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=101",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=101",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "101"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=102",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=102",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "102"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=apple",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=apple",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "apple"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person?n=2147483648",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person?n=2147483648",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "2147483648"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=0",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=0",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "0"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=101",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=101",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "101"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=102",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=102",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "102"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=apple",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=apple",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "apple"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/?n=2147483648",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/?n=2147483648",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ],
+                  "query": [
+                    {
+                      "key": "n",
+                      "value": "2147483648"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`GET ${pm.request.url.getPathWithQuery()} returns 400 Bad Request`, function () {\r\n    pm.response.to.have.status(400);\r\n});\r\n\r\n// ERROR BODY\r\npm.test(`GET ${pm.request.url.getPathWithQuery()} returns error body {\"error\": \"Incorrect GET parameter value\"}`, function () {\r\n    pm.expect(pm.response.json()).to.eql({ error: \"Incorrect GET parameter value\" });\r\n});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "error",
+          "item": [
+            {
+              "name": "/person",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns 405 Method Not Allowed`, function () {\r\n    pm.response.to.have.status(405);\r\n});\r\n\r\n// ERROR BODY\r\npm.test(`${pm.request.method} ${pm.request.url.getPath()} returns error body {\"error\": \"Incorrect HTTP method\"}`, function () {\r\n    pm.expect(pm.response.json()).to.eql({ error: \"Incorrect HTTP method\" });\r\n});\r\n\r\n// NO DATA RETURNED\r\npm.test(\"Response contains only the error key\", function () {\r\n    pm.expect(pm.response.json()).to.have.all.keys(\"error\");\r\n});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "misc",
+      "item": [
+        {
+          "name": "invalid-endpoints",
+          "item": [
+            {
+              "name": "/",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    ""
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/phone/61612728",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/phone/61612728",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "phone",
+                    "61612728"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/nope",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/nope",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "nope"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/PHONE",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/PHONE",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "PHONE"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "/person/abc",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BASE_URL}}/person/abc",
+                  "host": [
+                    "{{BASE_URL}}"
+                  ],
+                  "path": [
+                    "person",
+                    "abc"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// STATUS CODE\r\npm.test(`GET ${pm.request.url.getPath()} returns 404 Not Found`, function () {\r\n    pm.response.to.have.status(404);\r\n});\r\n\r\n// ERROR BODY\r\npm.test(`GET ${pm.request.url.getPath()} returns error body {\"error\": \"Incorrect API endpoint\"}`, function () {\r\n    pm.expect(pm.response.json()).to.eql({ error: \"Incorrect API endpoint\" });\r\n});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "// RESPONSE TIME\r",
+          "pm.test(\"Response time is under 300 ms\", function () {\r",
+          "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+          "});\r",
+          "\r",
+          "// CONTENT TYPE\r",
+          "pm.test(\"Content-Type is JSON\", function () {\r",
+          "    pm.response.to.be.json;\r",
+          "});"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ]
+}
