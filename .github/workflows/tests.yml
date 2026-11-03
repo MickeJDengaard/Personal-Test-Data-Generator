@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -29,10 +29,10 @@ jobs:
     needs: unit-tests
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -40,3 +40,38 @@ jobs:
 
       - name: Run integration tests
         run: mvn -B verify
+
+  api-tests:
+    name: API tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start app and database
+        run: docker compose up -d --build
+
+      - name: Wait for API
+        run: |
+          timeout 120 sh -c 'until curl -s -o /dev/null http://localhost:8080/phone; do sleep 2; done' || {
+            docker compose ps -a
+            docker compose logs
+            exit 1
+          }
+
+      - name: Install Postman CLI
+        run: curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
+      - name: Login to Postman CLI
+        env:
+          POSTMAN_API_KEY: ${{ secrets.POSTMAN_API_KEY }}
+        run: postman login --with-api-key "$POSTMAN_API_KEY"
+
+      - name: Run API tests
+        run: |
+          postman collection run "58427717-df35cbaf-96be-4dd4-9185-62e756b846b4" \
+            -e "58427717-aed7b47b-0131-4d4d-b34a-fecd735fe093" \
+            --env-var "BASE_URL=http://localhost:8080"
+
+      - name: Stop stack
+        if: always()
+        run: docker compose down -v

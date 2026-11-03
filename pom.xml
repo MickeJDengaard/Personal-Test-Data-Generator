@@ -41,46 +41,46 @@
             <artifactId>mariadb-java-client</artifactId>
             <scope>runtime</scope>
         </dependency>
-<dependency>
-    <groupId>org.testcontainers</groupId>
-    <artifactId>testcontainers</artifactId>
-    <version>2.0.5</version>
-    <scope>test</scope>
-</dependency>
         <dependency>
-    <groupId>org.testcontainers</groupId>
-    <artifactId>testcontainers-mariadb</artifactId>
-    <version>2.0.5</version>
-    <scope>test</scope>
-</dependency>
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-test</artifactId>
-        <scope>test</scope>
-    </dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>2.0.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-mariadb</artifactId>
+            <version>2.0.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
-    <!-- Spring Boot Testcontainers integration -->
-    <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-testcontainers</artifactId>
-        <scope>test</scope>
-    </dependency>
-<dependency>
-    <groupId>org.testcontainers</groupId>
-    <artifactId>testcontainers-junit-jupiter</artifactId>
-    <version>2.0.5</version>
-    <scope>test</scope>
-</dependency>
+        <!-- Spring Boot Testcontainers integration -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <version>2.0.5</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <version>6.1.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.23.0</version>
+            <version>5.24.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
