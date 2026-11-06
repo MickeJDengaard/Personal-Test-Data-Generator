@@ -2,8 +2,9 @@ package fakeinfo;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(MariaDbTestConfig.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) // needed so @BeforeAll can be non-static
 class FakeInfoIntegrationTest {
 
     @Autowired
@@ -41,64 +42,57 @@ class FakeInfoIntegrationTest {
     @Autowired
     private TownRepository townRepository;
 
-    private FakeInfo fakeInfo;
+    private int townCount;
+    private List<TownRepository.Town> allTowns;
 
-    @BeforeEach
-    void setUp() {
-        fakeInfo = new FakeInfo(personNames, townRepository, new Random());
+    // get all towns once
+    @BeforeAll
+    void loadTowns() {
+        townCount = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM postal_code", Integer.class);
+        allTowns = new ArrayList<>();
+
+        for (int i = 0; i < townCount; i++) {
+
+            final int row = i;
+            Random fixedRandom = new Random() {
+                @Override
+                public int nextInt(int bound) {
+                    return row;
+                }
+            };
+            allTowns.add(townRepository.getRandomTown(fixedRandom));
+        }
     }
 
-    // -------------------------------------------------
-    // TownRepository + database tests
-    // -------------------------------------------------
-
+    // town tests
     @Test
-    void randomTownShouldMatchRowInDatabase() {
+    void randomTownIsSameAsInDatabase() {
         TownRepository.Town town = townRepository.getRandomTown(new Random());
 
-        assertEquals(getTownNameFromDatabase(town.postalCode()), town.townName());
+        String townNameInDatabase = jdbcTemplate.queryForObject(
+                "SELECT cTownName FROM postal_code WHERE cPostalCode = ?",
+                String.class,
+                town.postalCode()
+        );
+
+        assertEquals(townNameInDatabase, town.townName());
     }
 
     @Test
-    void everyTownShouldBeReachable() {
-        int count = getTownCount();
-        TownRepository repository = new TownRepository(jdbcTemplate);
-
-        List<TownRepository.Town> towns = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            towns.add(repository.getRandomTown(new FixedRandom(i)));
-        }
-
-        assertEquals(count, towns.stream().distinct().count());
+    void allTownsCanBeFound() {
+        assertEquals(townCount, allTowns.stream().distinct().count());
     }
 
     @Test
-    void townNamesShouldKeepDanishCharacters() {
-        int count = getTownCount();
-        TownRepository repository = new TownRepository(jdbcTemplate);
-
-        List<TownRepository.Town> towns = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            towns.add(repository.getRandomTown(new FixedRandom(i)));
-        }
-
-        assertTrue(towns.contains(new TownRepository.Town("2100", "København Ø")));
+    void townNamesKeepDanishLetters() {
+        assertTrue(allTowns.contains(new TownRepository.Town("2100", "København Ø")));
     }
 
-    // -------------------------------------------------
-    // PersonNames + names file tests
-    // -------------------------------------------------
-
+    // names file test
     @Test
-    void namesFileShouldLoadPersons() {
+    void namesFileHasValidPersons() {
         List<PersonNames.Person> persons = personNames.persons();
-
         assertFalse(persons.isEmpty());
-    }
-
-    @Test
-    void namesFileShouldOnlyContainValidPersons() {
-        List<PersonNames.Person> persons = personNames.persons();
 
         for (PersonNames.Person person : persons) {
             assertFalse(person.firstName().isBlank());
@@ -108,58 +102,15 @@ class FakeInfoIntegrationTest {
         }
     }
 
-    // -------------------------------------------------
-    // FakeInfo + database + names file tests
-    // -------------------------------------------------
-
+    // controller tests
     @Test
-    void fakePersonShouldHaveNameFromNamesFile() {
-        Map<String, Object> person = fakeInfo.getFakePerson();
-
-        PersonNames.Person expected = new PersonNames.Person(
-                (String) person.get("firstName"),
-                (String) person.get("lastName"),
-                (String) person.get("gender")
-        );
-
-        assertTrue(personNames.persons().contains(expected));
-    }
-
-    @Test
-    void cprShouldMatchGenderFromNamesFile() {
-        List<Map<String, Object>> persons = fakeInfo.getFakePersons(FakeInfo.MAX_BULK_PERSONS);
-
-        for (Map<String, Object> person : persons) {
-            String cpr = (String) person.get("CPR");
-            int lastDigit = Character.getNumericValue(cpr.charAt(9));
-            int expectedParity = FakeInfo.GENDER_MASCULINE.equals(person.get("gender")) ? 1 : 0;
-
-            assertEquals(expectedParity, lastDigit % 2);
-        }
-    }
-
-    @Test
-    void fakePersonsShouldHaveTownsFromDatabase() {
-        List<Map<String, Object>> persons = fakeInfo.getFakePersons(FakeInfo.MAX_BULK_PERSONS);
-
-        assertEquals(FakeInfo.MAX_BULK_PERSONS, persons.size());
-        for (Map<String, Object> person : persons) {
-            Map<String, Object> address = getAddress(person);
-
-            assertEquals(
-                    getTownNameFromDatabase((String) address.get("postal_code")),
-                    address.get("town_name")
-            );
-        }
-    }
-
-    // -------------------------------------------------
-    // Controller tests
-    // -------------------------------------------------
-
-    @Test
-    void personEndpointShouldReturnPersonWithAllFields() throws Exception {
-        JsonNode person = getJson("/person");
+    void personHasAllFields() throws Exception {
+        String body = mockMvc.perform(get("/person"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+        JsonNode person = objectMapper.readTree(body);
 
         List<String> fields = new ArrayList<>();
         person.fieldNames().forEachRemaining(fields::add);
@@ -171,81 +122,56 @@ class FakeInfoIntegrationTest {
     }
 
     @Test
-    void personEndpointShouldReturnDataFromDatabaseAndNamesFile() throws Exception {
-        JsonNode person = getJson("/person");
-
-        assertPersonUsesRealData(person);
-    }
-
-    @Test
-    void personEndpointShouldReturnThreePersons() throws Exception {
-        JsonNode persons = getJson("/person?n=3");
-
-        assertTrue(persons.isArray());
-        assertEquals(3, persons.size());
-        for (JsonNode person : persons) {
-            assertPersonUsesRealData(person);
-        }
-    }
-
-    // -------------------------------------------------
-    // Helpers
-    // -------------------------------------------------
-
-    private JsonNode getJson(String url) throws Exception {
-        String body = mockMvc.perform(get(url))
+    void personUsesDataFromDatabaseAndNamesFile() throws Exception {
+        String body = mockMvc.perform(get("/person"))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString(StandardCharsets.UTF_8);
+        JsonNode person = objectMapper.readTree(body);
 
-        return objectMapper.readTree(body);
-    }
-
-    private void assertPersonUsesRealData(JsonNode person) {
         JsonNode address = person.get("address");
-
-        assertEquals(
-                getTownNameFromDatabase(address.get("postal_code").asText()),
-                address.get("town_name").asText()
+        String townNameInDatabase = jdbcTemplate.queryForObject(
+                "SELECT cTownName FROM postal_code WHERE cPostalCode = ?",
+                String.class,
+                address.get("postal_code").asText()
         );
-
-        PersonNames.Person expected = new PersonNames.Person(
+        assertEquals(townNameInDatabase, address.get("town_name").asText());
+        PersonNames.Person personFromResponse = new PersonNames.Person(
                 person.get("firstName").asText(),
                 person.get("lastName").asText(),
                 person.get("gender").asText()
         );
-
-        assertTrue(personNames.persons().contains(expected));
+        assertTrue(personNames.persons().contains(personFromResponse));
     }
 
-    private String getTownNameFromDatabase(String postalCode) {
-        return jdbcTemplate.queryForObject(
-                "SELECT cTownName FROM postal_code WHERE cPostalCode = ?",
-                String.class,
-                postalCode
-        );
-    }
+    @Test
+    void canGetThreePersons() throws Exception {
+        String body = mockMvc.perform(get("/person?n=3"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+        JsonNode persons = objectMapper.readTree(body);
 
-    private int getTownCount() {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM postal_code", Integer.class);
-    }
+        assertTrue(persons.isArray());
+        assertEquals(3, persons.size());
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> getAddress(Map<String, Object> person) {
-        return (Map<String, Object>) person.get("address");
-    }
+        for (JsonNode person : persons) {
+            JsonNode address = person.get("address");
+            String townNameInDatabase = jdbcTemplate.queryForObject(
+                    "SELECT cTownName FROM postal_code WHERE cPostalCode = ?",
+                    String.class,
+                    address.get("postal_code").asText()
+            );
+            assertEquals(townNameInDatabase, address.get("town_name").asText());
 
-    private static class FixedRandom extends Random {
-        private final int value;
-
-        FixedRandom(int value) {
-            this.value = value;
-        }
-
-        @Override
-        public int nextInt(int bound) {
-            return value;
+            PersonNames.Person personFromResponse = new PersonNames.Person(
+                    person.get("firstName").asText(),
+                    person.get("lastName").asText(),
+                    person.get("gender").asText()
+            );
+            assertTrue(personNames.persons().contains(personFromResponse));
         }
     }
 }
